@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1DSNXW1K2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-Z1DSNXW1K2');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>CorresNeRF: Image Correspondence Priors for Neural Radiance Fields</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="https://yxlao.github.io/images/favicon/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+
+    <script src="js/app.js"></script>
+
+    <style>
+        .CodeMirror {
+            background-color: #f1f1f1 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h2 class="col-md-12 text-center">
+                    <br>CorresNeRF: Image Correspondence Priors for Neural Radiance Fields</br>
+                    <small>
+                        NeurIPS 2023
+                    </small>
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://yxlao.github.io/">
+                            <strong>Yixing Lao</strong>
+                        </a>
+                        </br>HKU
+                    </li>
+                    <li>
+                        <a href="https://xiaogang00.github.io/">
+                            <strong>Xiaogang Xu</strong>
+                        </a>
+                        </br>ZJU
+                    </li>
+                    <li>
+                        <a href="https://zhipengcai.github.io/">
+                            <strong>Zhipeng Cai</strong>
+                        </a>
+                        </br>Intel Labs
+                    </li>
+                    <li>
+                        <a href="https://xh-liu.github.io/">
+                            <strong>Xihui Liu</strong>
+                        </a>
+                        </br>HKU
+                    </li>
+                    <li>
+                        <a href="https://hszhao.github.io/">
+                            <strong>Hengshuang Zhao</strong>
+                        </a>
+                        </br>HKU
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 text-center">
+                <ul class="nav nav-pills nav-justified">
+                    <li>
+                        <a href="https://arxiv.org/abs/2312.06642">
+                            <image src="assets/paper_image.jpg" height="60px">
+                                <h4><strong>Paper</strong></h4>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/yxlao/corres-nerf">
+                            <image src="assets/github.png" height="60px">
+                                <h4><strong>Code</strong></h4>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <video id="v0" width="100%" autoplay loop muted controls>
+                    <source src="assets/demo_video.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Neural Radiance Fields (NeRFs) have achieved impressive results in novel view synthesis and surface
+                    reconstruction tasks. However, their performance suffers under challenging scenarios with sparse
+                    input views. We present CorresNeRF, a novel method that leverages image correspondence priors
+                    computed by off-the-shelf methods to supervise NeRF training. We design adaptive processes for
+                    augmentation and filtering to generate dense and high-quality correspondences. The correspondences
+                    are then used to regularize NeRF training via the correspondence pixel reprojection and depth loss
+                    terms. We evaluate our methods on novel view synthesis and surface reconstruction tasks with
+                    density-based and SDF-based NeRF models on different datasets. Our method outperforms previous
+                    methods in both photometric and geometric metrics. We show that this simple yet effective technique
+                    of using correspondence priors can be applied as a plug-and-play module across different NeRF
+                    variants.
+                </p>
+                <p align="right">
+                    <a href="https://github.com/yxlao/camtools"><img alt="Built with CamTools"
+                            src="https://raw.githubusercontent.com/yxlao/camtools/master/camtools/assets/built_with_camtools_light.svg"
+                            width=240></a>
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Image Correspondence Priors
+                </h3>
+                <div class="text-center">
+                    <p><img src="assets/corres_teaser.jpg" width="100%"></p>
+                </div>
+                <p class="text-justify">
+                    Given a sparse set of sparse input images (column 1), our method leverages the image correspondence
+                    priors computed from pre-trained models (column 2) to supervise NeRF training.
+                    With image correspondence supervision, we achieve much higher quality novel view synthesis (column
+                    3) and surface reconstruction (column 4) compared to the baseline methods.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Results - LLFF
+                </h3>
+                <div class="text-center">
+                    <p><img src="assets/results_llff.jpg" width="100%"></p>
+                </div>
+                <p class="text-justify">
+                    Novel view synthesis results on LLFF with density-field-based NeRF models. We follow the
+                    convention to use every 8th image as test images, while selecting the training views
+                    uniformly from the rest of the images. The selected training
+                    views and test views are the same across all methods. Three input views are used
+                    for training.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Results - DTU
+                </h3>
+                <div class="text-center">
+                    <p><img src="assets/results_dtu.jpg" width="100%"></p>
+                </div>
+                <p class="text-justify">
+                    Surface reconstruction results on DTU with SDF-based models. We follow
+                    the convention to use the same subset of scenes from DTU as previous works. The
+                    models are trained without mask supervision. The selected training
+                    views and test views are the same across all methods. Three input views are used
+                    for training.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <textarea id="bibtex" class="form-control" readonly>
+@inproceedings{lao2023corresnerf,
+    title     = {{CorresNeRF}: Image Correspondence Priors for Neural Radiance Fields},
+    author    = {Lao, Yixing and Xu, Xiaogang and Cai, Zhipeng and Liu, Xihui and Zhao, Hengshuang},
+    booktitle = {NeurIPS},
+    year      = {2023}
+}</textarea>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2" align="right">
+                <p style="padding-top: 36px;">
+                    The website template was borrowed from
+                    <a href="https://jonbarron.info/mipnerf360/">MiP-NeRF 360</a>.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

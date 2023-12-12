@@ -1,2 +1,3 @@
-# corres-nerf
-Source Code for "CorresNeRF: Image Correspondence Priors for Neural Radiance Fields"
+# CorresNeRF Website
+
+Source code for [CorresNeRF website](https://yxlao.github.io/corres-nerf/).
