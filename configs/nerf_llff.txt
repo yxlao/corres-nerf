@@ -1,0 +1,38 @@
+basedir = ./logs
+dataset_type = llff
+
+factor = 8
+llffhold = 0
+
+N_rand = 1024
+N_samples = 64
+N_importance = 64
+
+use_viewdirs = True
+raw_noise_std = 1e0
+
+num_sparse_views = 3
+no_ndc = True
+
+corres_enabled = True
+corres_matcher = dkm
+corres_config = default
+corres_robust_ratio = 1.0
+
+corres_confidence_enabled = True
+corres_confidence_normalized = False
+
+corres_dist_enabled = True
+corres_dist_tdist = 5.0
+corres_dist_robust_ratio = 1.0
+
+corres_pixel_enabled = True
+corres_pixel_tdist_min = 5.0
+corres_pixel_tdist_max = 20.0
+corres_pixel_robust_ratio = 0.70
+
+corres_ds_enabled = True
+corres_ds_squared = False
+corres_ds_robust_ratio = 1.0
+
+n_iters = 50000

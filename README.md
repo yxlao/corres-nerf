@@ -22,14 +22,136 @@ CorresNeRF: Image Correspondence Priors for Neural Radiance Fields
       alt="Paper"></a>
 </p>
 
-Source code release coming soon. Please stay tuned.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/yxlao/corres-nerf/gh-pages/assets/demo_video.gif" height=320>
+</p>
 
-## Demo
+<p align="center">
+  For more details, please visit our <a href="https://yxlao.github.io/corres-nerf/">project page</a> and <a href="https://arxiv.org/abs/2312.06642">paper</a>.
+</p>
 
-<img src="https://raw.githubusercontent.com/yxlao/corres-nerf/gh-pages/assets/demo_video.gif" height=320>
+## Installation
 
-For more details, please visit our [project page](https://yxlao.github.io/corres-nerf/) and [paper](https://arxiv.org/abs/2312.06642).
+```bash
+# Environment
+conda create -n corresnerf python=3.10
+conda activate corresnerf
 
+# Install dependencies
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt
+pip install git+https://github.com/Parskatt/DKM.git
+```
+
+## Data
+
+- Download [LLFF dataset](https://drive.google.com/drive/folders/128yBriW1IG_3NJ5Rp7APSTZsJqdJdfc1) for NeRF and extract to `data/nerf_llff`.
+- Download [DTU dataset](https://www.dropbox.com/scl/fo/um3wj3ctiuoottbfmqmgb/ABZRltszDvWHJ824UL6DHw0?rlkey=3vjok0aivnoiaf8z5j6w05k92&e=1&dl=0) for NeuS and extract to `data/neus_dtu`.
+
+After extraction, we shall have:
+
+```bash
+$ tree -lL 2 data
+data
+|-- nerf_llff
+|   |-- fern
+|   |-- flower
+|   # ... more scenes
+|   |-- room
+|   `-- trex
+`-- neus_dtu
+    |-- dtu_scan105
+    |-- dtu_scan106
+    # ... more scenes
+    |-- dtu_scan83
+    `-- dtu_scan97
+```
+
+## Pre-trained weights
+
+We release [pre-trained weights](https://drive.google.com/file/d/1C4sNNVd43pWP9qGvKdEu7RdgU-hSJ41Z/view?usp=sharing) for the paper for each scene.
+Extract `pretrained_weights.zip` to `logs/` and we shall have:
+
+```bash
+$ tree -lL 4 logs
+logs
+|-- nerf_llff
+|   |-- fern
+|   |   `-- 050000.tar
+|   |-- flower
+|   |   `-- 050000.tar
+|   # ... more scenes
+|   |-- room
+|   |   `-- 050000.tar
+|   `-- trex
+|       `-- 050000.tar
+`-- neus_dtu
+    |-- dtu_scan105
+    |   `-- checkpoints
+    |       `-- ckpt_200000.pth
+    |-- dtu_scan106
+    |   `-- checkpoints
+    |       `-- ckpt_200000.pth
+    # ... more scenes
+    |-- dtu_scan83
+    |   `-- checkpoints
+    |       `-- ckpt_200000.pth
+    `-- dtu_scan97
+        `-- checkpoints
+            `-- ckpt_200000.pth
+```
+
+## Inference with the pre-trained weights
+
+We use the `fern` scene for NeRF on LLFF and the `dtu_scan24` scene for NeuS on DTU as example.
+
+```bash
+# Inference with NeRF. This will load the latest checkpoint (050000.tar in this case).
+# - The rendered images will be saved in logs/nerf_llff/fern/renderall_050000.
+python -m src.tools.run_nerf --config configs/nerf_llff.txt --scene fern --factor 8 --render_all
+
+# Inference with NeuS. This will load the specified checkpoint (ckpt_200000.pth in this case).
+# - The rendered images will be saved in logs/neus_dtu/dtu_scan24/renders.
+# - The extracted mesh will be saved in logs/neus_dtu/dtu_scan24/meshes.
+python -m src.tools.run_neus --conf configs/neus_dtu.conf --case dtu_scan24 --from_checkpoint ckpt_200000.pth render --resolution_level 4
+python -m src.tools.run_neus --conf configs/neus_dtu.conf --case dtu_scan24 --from_checkpoint ckpt_200000.pth extract_mesh
+```
+
+## Correspondence matching and training
+
+The full pipeline includes:
+
+- Extract correspondences.
+- Train NeRF / NeuS models.
+- Render with the trained NeRF / NeuS.
+- Extract mesh with the trained NeuS.
+
+For NeRF on LLFF, we use the `fern` scene as example.
+
+```bash
+# Matcher
+python -m src.tools.run_matcher --enable_matcher --enable_filter --matcher_name dkm --config_name default --num_views 3 --dataset llff --scene_dir data/nerf_llff/fern --corres_dir data_corres/nerf_llff/fern
+
+# Train
+python -m src.tools.run_nerf --config configs/nerf_llff.txt --scene fern
+
+# Render
+python -m src.tools.run_nerf --config configs/nerf_llff.txt --scene fern --factor 8 --render_all
+```
+
+For NeuS on DTU, we use the `dtu_scan24` scene as example.
+
+```bash
+# Match
+python -m src.tools.run_matcher --enable_matcher --enable_filter --matcher_name dkm --config_name default --num_views 3 --dataset dtu --scene_dir data/neus_dtu/dtu_scan24 --corres_dir data_corres/neus_dtu/dtu_scan24
+
+# Train
+python -m src.tools.run_neus --conf configs/neus_dtu.conf --case dtu_scan24 --is_continue train
+
+# Render & extract mesh
+python -m src.tools.run_neus --conf configs/neus_dtu.conf --case dtu_scan24 --from_checkpoint ckpt_200000.pth render --resolution_level 4
+python -m src.tools.run_neus --conf configs/neus_dtu.conf --case dtu_scan24 --from_checkpoint ckpt_200000.pth extract_mesh
+```
 
 ## Citation
 
@@ -45,6 +167,7 @@ If you find our work useful in your research, please consider citing:
 ```
 
 This project is built with [CamTools](https://github.com/yxlao/camtools).
+
 <p>
 <a href="https://github.com/yxlao/camtools"><img src="https://raw.githubusercontent.com/yxlao/camtools/master/camtools/assets/built_with_camtools_dark.svg" width=240 alt="Built with CamTools"></a>
 </p>
